@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 np.random.seed(1337)
 POP_SIZE = 10
@@ -27,7 +28,7 @@ def plot_route(coordinates, route, title="Map of cities with route", is_save=Fal
 
 def plot_statistics(fitness_vals, title="", is_save=False, filename=""):
     plt.plot(fitness_vals[0], label="memetic")
-    plt.plot(fitness_vals[1], label="normal")
+    plt.plot(fitness_vals[1], label="simple")
     plt.xlabel("Iterations")
     plt.ylabel("Fitness (total Euclidean distance)")
     plt.legend()
@@ -127,6 +128,7 @@ def neighbours(tour):
     return neighbours
 
 def evolve(coordinates, is_memetic=False, iterations=10000, step_size=100, population_size=10, mutation_probability=0.5):
+    start_time = time.time()
     avg_fitnesses, best_fitnesses = [], []
     population = init_population(population_size, len(coordinates))
     if is_memetic:
@@ -145,7 +147,7 @@ def evolve(coordinates, is_memetic=False, iterations=10000, step_size=100, popul
         if i % step_size == 0:
             print(i)
 
-    return population, avg_fitnesses, best_fitnesses
+    return population, avg_fitnesses, best_fitnesses, time.time()-start_time
 
 def main():
     dataset = "ulysses16"
@@ -157,22 +159,25 @@ def main():
     coordinates = np.array([line.split(" ")[1:] for line in coordinates_file.readlines()], dtype=int)
     opt_route = np.array(open("data/"+dataset+".opt.tour.txt", "r").readlines(), dtype=int)
 
-    final_pop_meme, avg_fit_meme, best_fit_meme = evolve(coordinates, is_memetic=True, iterations=iterations, population_size=pop_size, mutation_probability=mut_prob)
+    final_pop_meme, avg_fit_meme, best_fit_meme, time_meme = evolve(coordinates, is_memetic=True, iterations=iterations, population_size=pop_size, mutation_probability=mut_prob)
     final_fit_meme = fitness(final_pop_meme, coordinates)
     fittest_meme = final_pop_meme[np.argmin(final_fit_meme)]
 
-    final_pop_norm, avg_fit_norm, best_fit_norm = evolve(coordinates, iterations=iterations, population_size=pop_size, mutation_probability=mut_prob)
+    final_pop_norm, avg_fit_norm, best_fit_norm, time_norm = evolve(coordinates, iterations=iterations, population_size=pop_size, mutation_probability=mut_prob)
     final_fit_norm = fitness(final_pop_norm, coordinates)
     fittest_norm = final_pop_norm[np.argmin(final_fit_norm)]
 
     plot_route(coordinates, fittest_meme, title="Best tour of final memetic population", is_save=True, filename="img/tour_meme.png")
-    plot_route(coordinates, fittest_norm, title="Best tour of final normal population", is_save=True, filename="img/tour_norm.png")
+    plot_route(coordinates, fittest_norm, title="Best tour of final simple population", is_save=True, filename="img/tour_norm.png")
     plot_route(coordinates, opt_route, title="Optimal tour")
 
     plot_statistics([avg_fit_meme, avg_fit_norm],
-                    "Average fitness of memetic and normal algorithm", is_save=True, filename="img/avg_fit_vals.png")
+                    "Average fitness of memetic and simple algorithm", is_save=True, filename="img/avg_fit_vals.png")
     plot_statistics([best_fit_meme, best_fit_norm],
-                    "Best fitness of memetic and normal algorithm", is_save=True, filename="img/best_fit_vals.png")
+                    "Best fitness of memetic and simple algorithm", is_save=True, filename="img/best_fit_vals.png")
+
+    print("Execution time in seconds for memetic algorithm: {}s".format(time_meme))
+    print("Execution time in seconds for simple algorithm: {}s".format(time_meme))
 
 if __name__ == "__main__":
     main()
