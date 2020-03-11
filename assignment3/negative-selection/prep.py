@@ -30,6 +30,8 @@ def preprocess_train(filename, chunk_size, overlap):
     for l in input:
         l = l[:-1] # ignore newline
         chunks = split_to_chunks(l, chunk_size, overlap)
+        if len(chunks) == 0:
+            continue
         chunks = '\n'.join(chunks)
         out.write(chunks)
         out.write('\n')
@@ -50,6 +52,8 @@ def preprocess_test(filename, labels, chunk_size, overlap):
         l = l[:-1] # ignore newline
         c = next(labels)[:-1] # get label of data
         chunks = split_to_chunks(l[:-1], chunk_size, overlap)
+        if len(chunks) == 0:
+            continue
         chunks = '\n'.join(chunks)
         if c == '0':
             out_normal.write(chunks)
