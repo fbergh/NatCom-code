@@ -1,6 +1,8 @@
 import os
 import subprocess
 import numpy as np
+from sklearn.metrics import roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
 
 FILE_PATH = "syscalls"
 SYSCALLS = ["snd-cert", "snd-unm"]
@@ -115,7 +117,6 @@ def collect_predictions(syscall_type, syscall_type_dict):
     nonself_indexes = syscall_type_dict[f"{syscall_type}-nonself"]
     nonself_indexes = np.array(nonself_indexes) + indexes[-1]
     indexes.extend(nonself_indexes.tolist())
-
     pred = []
     start = 0
     for i in indexes:
@@ -126,6 +127,18 @@ def collect_predictions(syscall_type, syscall_type_dict):
         start = i
 
     return pred
+
+def generate_roc(ground, pred):
+    # NOTE: TODO: The next line is a placeholder to make sure that there are no NaNs
+    pred = ground
+    fpr, tpr, _ = roc_curve(ground, pred)
+    ns_fpr, ns_tpr, _ = roc_curve(ground, np.zeros(len(pred),))
+    plt.figure(figsize=(16, 10))
+    plt.plot(fpr, tpr, marker='.', label='Negative Selection')
+    plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.legend()
 
 def main():
     CHUNK_SIZE = 7
@@ -140,11 +153,16 @@ def main():
     for syscall_type in SYSCALLS:
         negative_selection(syscall_type, CHUNK_SIZE, 4, count=True, log=False)
 
-    print("Collect predictions")
-    pred = collect_predictions(SYSCALLS[0], syscall_type_dict)
-    print(len(pred))
-
     print("Calculate results")
+    for syscall_type in SYSCALLS:
+        pred = collect_predictions(syscall_type, syscall_type_dict)
+        # Ground truth predictions
+        ground = np.zeros(len(pred))
+        num_of_nonself = len(syscall_type_dict[f"{syscall_type}-nonself"])
+        ground[-num_of_nonself:] = 1
+        # Generate ROC plots
+        generate_roc(ground, pred)
+        plt.savefig(f"{syscall_type}-roc.pdf")
 
     print("Done")
 
