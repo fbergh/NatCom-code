@@ -38,7 +38,7 @@ def split_train_into_chunks(chunk_size):
         with open(snd_train_path) as train_file:
             for syscall in train_file:
                 # Generate all n-grams of the current syscall
-                n_grams = extract_n_grams(syscall,chunk_size,unique=True)
+                n_grams = extract_n_grams(syscall.strip(),chunk_size,unique=True)
                 # Write n-grams to syscall chunks file
                 syscalls_split_file.writelines(n_grams)
         syscalls_split_file.close()
@@ -61,7 +61,7 @@ def split_test_into_chunks(chunk_size):
             with open(filename+".test") as syscalls_file:
                 for syscall in syscalls_file:
                     # Generate all n-grams of the current syscall
-                    n_grams = extract_n_grams(syscall,chunk_size,unique=False)
+                    n_grams = extract_n_grams(syscall.strip(),chunk_size,unique=False)
                     # Write n-grams to syscall chunks file
                     syscalls_split_file.writelines(n_grams)
                     # Keep track of end position in chunks file of current syscall
@@ -108,7 +108,10 @@ def merge_test_files():
 def negative_selection(syscall_type, n, r, count=True, log=False):
     alphabet_file = f"file://{FILE_PATH}/{syscall_type}/{syscall_type}.alpha"
     self_file = f"{syscall_type}-split.train"
-    os.system(f"java -jar negsel2.jar -alphabet {alphabet_file} -self {self_file} -n {n} -r {r} < {syscall_type}-merged-split.test > {syscall_type}-output")
+    count_param = "-c" if count else ""
+    log_param = "-l" if log else ""
+    os.system(f"java -jar negsel2.jar -alphabet {alphabet_file} -self {self_file} -n {n} -r {r} \
+                {count_param} {log_param} < {syscall_type}-merged-split.test > {syscall_type}-output")
 
 
 def collect_predictions(syscall_type, syscall_type_dict):
@@ -121,7 +124,7 @@ def collect_predictions(syscall_type, syscall_type_dict):
     start = 0
     for i in indexes:
         # Read n lines from the output file
-        results = [float(next(output_file).strip()) for x in range(i-start)]
+        results = [float(next(output_file).strip()) for _ in range(i-start)]
         total_anomaly = np.mean(results)
         pred.append(total_anomaly)
         start = i
@@ -129,8 +132,6 @@ def collect_predictions(syscall_type, syscall_type_dict):
     return pred
 
 def generate_roc(ground, pred):
-    # NOTE: TODO: The next line is a placeholder to make sure that there are no NaNs
-    pred = ground
     fpr, tpr, _ = roc_curve(ground, pred)
     ns_fpr, ns_tpr, _ = roc_curve(ground, np.zeros(len(pred),))
     plt.figure(figsize=(16, 10))
@@ -142,6 +143,7 @@ def generate_roc(ground, pred):
 
 def main():
     CHUNK_SIZE = 7
+    R = 4
 
     print("Preparing files")
     create_self_nonself_files()
@@ -149,9 +151,9 @@ def main():
     split_train_into_chunks(CHUNK_SIZE)
     merge_test_files()
 
-    print("Negative selection")
     for syscall_type in SYSCALLS:
-        negative_selection(syscall_type, CHUNK_SIZE, 4, count=True, log=False)
+        print(f"Negative selection for {syscall_type}")
+        negative_selection(syscall_type, CHUNK_SIZE, R, count=False, log=False)
 
     print("Calculate results")
     for syscall_type in SYSCALLS:
