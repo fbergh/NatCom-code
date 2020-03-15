@@ -76,14 +76,13 @@ def split_test_into_chunks(chunk_size):
     return syscall_type_dict
 
 
-def extract_n_grams(string, n, unique=True):
+def extract_n_grams(string, n, overlap=0, unique=True):
     """
     Extracts n-grams from the current string
     NOTE: when unique=True, it only extracts unique n-grams in the current string.
           There might still be duplicates in the collection
     """
     n_grams = []
-    overlap = 0
     step = n - overlap
     n_grams = [string[i:i+n] for i in range(0, len(string)-step+1, step)]
 
@@ -164,6 +163,9 @@ def main():
     print("Calculate results")
     for syscall_type in SYSCALLS:
         pred = collect_predictions(syscall_type, syscall_type_dict)
+        plt.figure(figsize=(8,8))
+        plt.hist(pred)
+        plt.savefig("{syscall_type}-hist.pdf")
         # Ground truth predictions
         ground = np.zeros(len(pred))
         num_of_nonself = len(syscall_type_dict[f"{syscall_type}-nonself"])
