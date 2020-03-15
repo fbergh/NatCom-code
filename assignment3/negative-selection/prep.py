@@ -5,7 +5,8 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 
 FILE_PATH = "syscalls"
-SYSCALLS = ["snd-cert", "snd-unm"]
+#SYSCALLS = ["snd-cert", "snd-unm"]
+SYSCALLS = ["snd-cert"]
 LABELS = ["self","nonself"]
 
 def create_self_nonself_files():
@@ -39,6 +40,8 @@ def split_train_into_chunks(chunk_size):
             for syscall in train_file:
                 # Generate all n-grams of the current syscall
                 n_grams = extract_n_grams(syscall.strip(),chunk_size,unique=True)
+                if len(n_grams)==0:
+                    continue
                 # Write n-grams to syscall chunks file
                 syscalls_split_file.writelines(n_grams)
         syscalls_split_file.close()
@@ -62,6 +65,8 @@ def split_test_into_chunks(chunk_size):
                 for syscall in syscalls_file:
                     # Generate all n-grams of the current syscall
                     n_grams = extract_n_grams(syscall.strip(),chunk_size,unique=False)
+                    if len(n_grams)==0:
+                        continue
                     # Write n-grams to syscall chunks file
                     syscalls_split_file.writelines(n_grams)
                     # Keep track of end position in chunks file of current syscall
@@ -79,12 +84,14 @@ def extract_n_grams(string, n, unique=True):
           There might still be duplicates in the collection
     """
     n_grams = []
-    for i in range(len(string)-n+1):
-        n_gram = string[i:i+n] + "\n"
-        n_grams.append(n_gram)
+    overlap = 0
+    step = n - overlap
+    n_grams = [string[i:i+n] for i in range(0, len(string)-step+1, step)]
 
     if unique:
         n_grams = list(set(n_grams))
+
+    n_grams = [g+"\n" for g in n_grams]
 
     return n_grams
 
@@ -111,7 +118,7 @@ def negative_selection(syscall_type, n, r, count=True, log=False):
     count_param = "-c" if count else ""
     log_param = "-l" if log else ""
     os.system(f"java -jar negsel2.jar -alphabet {alphabet_file} -self {self_file} -n {n} -r {r} \
-                {count_param} {log_param} < {syscall_type}-merged-split.test > {syscall_type}-output")
+                {count_param} {log_param} -c < {syscall_type}-merged-split.test > {syscall_type}-output")
 
 
 def collect_predictions(syscall_type, syscall_type_dict):
@@ -134,9 +141,9 @@ def collect_predictions(syscall_type, syscall_type_dict):
 def generate_roc(ground, pred):
     fpr, tpr, _ = roc_curve(ground, pred)
     ns_fpr, ns_tpr, _ = roc_curve(ground, np.zeros(len(pred),))
-    plt.figure(figsize=(16, 10))
-    plt.plot(fpr, tpr, marker='.', label='Negative Selection')
-    plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
+    plt.figure(figsize=(10, 10))
+    plt.plot(fpr, tpr, marker='.', label='Negative Selection', linewidth=2)
+    plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill', linewidth=2)
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.legend()
