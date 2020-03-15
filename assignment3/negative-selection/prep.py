@@ -5,8 +5,7 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 
 FILE_PATH = "syscalls"
-#SYSCALLS = ["snd-cert", "snd-unm"]
-SYSCALLS = ["snd-cert"]
+SYSCALLS = ["snd-cert", "snd-unm"]
 LABELS = ["self","nonself"]
 
 def create_self_nonself_files():
