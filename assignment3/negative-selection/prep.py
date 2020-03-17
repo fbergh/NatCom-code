@@ -2,7 +2,7 @@ import os, shutil
 import pickle
 import subprocess
 import numpy as np
-from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 
 TEMP_DIR = "temp"
@@ -141,15 +141,18 @@ def collect_predictions(n, r, syscall_type, syscall_type_dict):
 
     return pred
 
-def generate_roc(ground, pred):
+def generate_roc(n, r, ground, pred):
     fpr, tpr, _ = roc_curve(ground, pred)
+    auc_score = auc(fpr, tpr)
     ns_fpr, ns_tpr, _ = roc_curve(ground, np.zeros(len(pred),))
-    plt.figure(figsize=(10, 10))
-    plt.plot(fpr, tpr, marker='.', label='Negative Selection', linewidth=2)
-    plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill', linewidth=2)
+    plt.figure(figsize=(7, 7))
+    plt.grid()
+    plt.plot(fpr, tpr, marker='.', label=f'Negative Selection (AUC={auc_score:.3f})', linewidth=2)
+    plt.plot(ns_fpr, ns_tpr, linestyle='--', label='Chance', linewidth=2)
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.legend()
+    plt.title(f"ROC-curve for Negative Selection with N={n} and R={r}")
+    plt.legend(loc=4, framealpha=1)
 
 def run_negative_selection(n, r):
     # Preparation
@@ -163,7 +166,7 @@ def run_negative_selection(n, r):
     syscall_type_dict = split_test_into_chunks(n)
     # Write syscall_type_dict for reproducibility
     with open(f"{OUT_DIR}/N={n}-R={r}-indices.pkl", 'wb') as f:
-        pickle.dump(OUT_DIR, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(syscall_type_dict, f, pickle.HIGHEST_PROTOCOL)
     split_train_into_chunks(n)
     merge_test_files()
 
@@ -183,7 +186,7 @@ def run_negative_selection(n, r):
         num_of_nonself = len(syscall_type_dict[f"{syscall_type}-nonself"])
         ground[-num_of_nonself:] = 1
         # Generate ROC plots
-        generate_roc(ground, pred)
+        generate_roc(n,r, ground, pred)
         plt.savefig(f"{IMG_DIR}/N={n}-R={r}-{syscall_type}-roc.pdf")
         plt.savefig(f"{IMG_DIR}/N={n}-R={r}-{syscall_type}-roc.png")
     
