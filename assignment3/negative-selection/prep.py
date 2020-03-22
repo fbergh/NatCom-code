@@ -82,10 +82,13 @@ def split_test_into_chunks(chunk_size):
 
 def extract_n_grams(string, n, overlap=0, unique=True):
     """
-    Extracts n-grams from the current string
+    Extracts n-grams from the current string if n <= len(string)
     NOTE: when unique=True, it only extracts unique n-grams in the current string.
           There might still be duplicates in the collection
     """
+    if n > len(string):
+        return []    
+
     n_grams = []
     step = n - overlap
     n_grams = [string[i:i+n] for i in range(0, len(string)-step+1, step)]
@@ -154,6 +157,42 @@ def generate_roc(n, r, ground, pred):
     plt.title(f"ROC-curve for Negative Selection with N={n} and R={r}")
     plt.legend(loc=4, framealpha=1)
 
+def generate_roc(n, r, ground, pred):
+    fpr, tpr, _ = roc_curve(ground, pred)
+    auc_score = auc(fpr, tpr)
+    plt.figure(figsize=(7, 7))
+    plt.grid()
+    plt.plot(fpr, tpr, marker='.', label=f'Negative Selection (AUC={auc_score:.3f})', linewidth=2)
+    plt.plot([0,1], [0,1], linestyle='--', label='No Skill', linewidth=2)
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(f"ROC-curve for Negative Selection with N={n} and R={r}")
+    plt.legend(loc=4, framealpha=1)
+
+def generate_overlapping_rocs(n_list, r_list):
+    for syscall_type in SYSCALLS:
+        plt.figure(figsize=(7, 7))
+        plt.grid()
+        plt.plot([0,1], [0,1], linestyle='--', label='No Skill', linewidth=2)
+        for n,r in zip(n_list, r_list):
+            with open(f'{OUT_DIR}/N={n}-R={r}-indices.pkl', 'rb') as f:
+                syscall_type_dict = pickle.load(f)
+            pred = collect_predictions(n, r, syscall_type, syscall_type_dict)
+            # Ground truth predictions
+            ground = np.zeros(len(pred))
+            num_of_nonself = len(syscall_type_dict[f"{syscall_type}-nonself"])
+            ground[-num_of_nonself:] = 1
+            # Generate ROC plots
+            fpr, tpr, _ = roc_curve(ground, pred)
+            auc_score = auc(fpr, tpr)
+            plt.plot(fpr, tpr, marker='.', label=f'N={n}, R={r} (AUC={auc_score:.3f})', linewidth=2)
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title(f"ROC-curve for Negative Selection With Different Parameters")
+        plt.legend(loc=4, framealpha=1)
+        plt.savefig(f"{IMG_DIR}/{syscall_type}-roc.pdf")
+        plt.savefig(f"{IMG_DIR}/{syscall_type}-roc.png")
+
 def run_negative_selection(n, r):
     # Preparation
     if not os.path.exists(TEMP_DIR):
@@ -198,10 +237,14 @@ def run_negative_selection(n, r):
 def main():
     n_list = [3,5,7]
     r_list = [2,4,6]
+    # n_list = [7,7,7]
+    # r_list = [3,4,5]
 
     for n, r in zip(n_list, r_list):
         print(f"Running negsel with N={n} and R={r}")
         run_negative_selection(n, r)
+
+    generate_overlapping_rocs(n_list, r_list)
 
 if __name__ == "__main__":
     main()
