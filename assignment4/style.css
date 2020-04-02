@@ -1,0 +1,9 @@
+body {
+  font-family: "HelveticaNeue-Light", sans-serif;
+  padding: 0 1em;
+  background-color: #FFFFFF;
+}
+
+input {
+  width: 3em;
+}
