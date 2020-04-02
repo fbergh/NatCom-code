@@ -16,7 +16,7 @@ Since everything in CPM is a cell, each obstacle should be a cell. All obstacles
 ```json
 conf : {
   T : 20, // CPM temperature
-  J: [[0,10], [20,20]] ,
+  J: [[0,0], [0,20]] ,
   LAMBDA_V : [0,100],
   V : [0,153],
   P : [0,43],

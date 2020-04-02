@@ -6,10 +6,12 @@ let config = {
 
 	// CPM parameters and configuration
 	conf : {
+		torus : [true,true], // Should the grid have linked borders?
+		seed : 1337,  // Seed for random number generation.
 		T : 20, // CPM temperature
 
 		// Adhesion parameters:
-		J: [[0,10], [20,20]] ,
+		J: [[0,0], [0,20]] ,
 
 		// VolumeConstraint parameters
 		LAMBDA_V : [0,100], // VolumeConstraint importance per cellkind
