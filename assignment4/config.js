@@ -17,10 +17,10 @@ let config = {
 
     // VolumeConstraint parameters
     LAMBDA_V : [0,100,50], // VolumeConstraint importance per cellkind
-    V : [0,153,50], // Target volume of each cellkind
+    V : [0,78,50], // Target volume of each cellkind
 
     LAMBDA_P : [0,100,2],
-    P : [0,43,100],
+    P : [0,31,100],
 
     LAMBDA_ACT : [0,0,100],  // ActivityConstraint importance per cellkind
     MAX_ACT : [0,0,50],  // Activity memory duration per cellkind
