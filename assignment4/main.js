@@ -3,8 +3,8 @@ let sim;
 let meter;
 
 function setParams() {
-  let value = document.getElementById('numobst').value
-  config.simsettings.NRCELLS[0] = value;
+  config.simsettings.NRCELLS[0] = document.getElementById('numobst').value;
+  config.simsettings.NRCELLS[1] = document.getElementById('numcells').value;
 }
 
 function initialize() {
