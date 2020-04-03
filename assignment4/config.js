@@ -1,35 +1,44 @@
 let config = {
 
-	// Grid settings
-	ndim : 2,
-	field_size : [200,200],
+  // Grid settings
+  ndim : 2,
+  field_size : [200,200],
 
-	// CPM parameters and configuration
-	conf : {
-		torus : [true,true], // Should the grid have linked borders?
-		seed : 1337,  // Seed for random number generation.
-		T : 20, // CPM temperature
+  // CPM parameters and configuration
+  conf : {
+    torus : [true,true], // Should the grid have linked borders?
+    seed : 1337,  // Seed for random number generation.
+    T : 20, // CPM temperature
 
-		// Adhesion parameters:
-		J: [[0,0], [0,20]] ,
+    // Adhesion parameters:
+    J: [[0,20,20],
+			[20,20,20],
+			[20,20,20]],
 
-		// VolumeConstraint parameters
-		LAMBDA_V : [0,100], // VolumeConstraint importance per cellkind
-		V : [0,153], // Target volume of each cellkind
-  	P : [0,43],
-  	LAMBDA_P : [0,100]
-	},
+    // VolumeConstraint parameters
+    LAMBDA_V : [0,100,50], // VolumeConstraint importance per cellkind
+    V : [0,153,50], // Target volume of each cellkind
 
-	// Simulation setup and configuration
-	simsettings : {
-		// Cells on the grid
-		NRCELLS : [300], // Number of cells to seed for all
-		// non-background cellkinds.
+    LAMBDA_P : [0,100,2],
+    P : [0,43,100],
 
-		RUNTIME : 500, // Only used in node
+    LAMBDA_ACT : [0,0,100],  // ActivityConstraint importance per cellkind
+    MAX_ACT : [0,0,50],  // Activity memory duration per cellkind
+    ACT_MEAN : "geometric",
+  },
 
-		CANVASCOLOR : "eaecef",
-    CELLCOLOR: ['9c9c9c'],
-		zoom : 3 // zoom in on canvas with this factor.
-	}
+  // Simulation setup and configuration
+  simsettings : {
+    // Cells on the grid
+    NRCELLS : [2,2], // Number of cells to seed for all
+    // non-background cellkinds.
+
+    RUNTIME : 500, // Only used in node
+
+    CANVASCOLOR : "eaecef",
+    CELLCOLOR: ['000000','6305fb'],
+    SHOWBORDERS : [false, true],
+    ACTCOLOR : [false,false],
+    zoom : 3 // zoom in on canvas with this factor.
+  }
 }
