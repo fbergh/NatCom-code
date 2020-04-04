@@ -53,7 +53,7 @@ function initializeGrid(){
   }
 
   // Randomly seed the moving cells
-  for (let i=10; i<Number(this.conf.NRCELLS[1]); i++) {
+  for (let i=0; i<Number(this.conf.NRCELLS[1]); i++) {
     this.gm.seedCell(2)
   }
 }
