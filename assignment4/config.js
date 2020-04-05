@@ -1,4 +1,4 @@
-let volume_normal_cell = 50;
+let volume_normal_cell = 200;
 let config = {
 
   // Grid settings
@@ -20,11 +20,12 @@ let config = {
     LAMBDA_V : [0,100,50], // VolumeConstraint importance per cellkind
     V : [0,volume_normal_cell/2,volume_normal_cell], // Target volume of each cellkind
 
-    LAMBDA_P : [0,16*(volume_normal_cell/100),2],
-    P : [0,32*(volume_normal_cell/100),100],
+    // Scale the parameters with the cell size such that behaviour is consistent across all cell sizes
+    LAMBDA_P : [0,16*(volume_normal_cell/100),1*(volume_normal_cell/100)],
+    P : [0,32*(volume_normal_cell/100),90*(volume_normal_cell/100)],
 
-    LAMBDA_ACT : [0,0,100],  // ActivityConstraint importance per cellkind
-    MAX_ACT : [0,0,50],  // Activity memory duration per cellkind
+    LAMBDA_ACT : [0,0,200],  // ActivityConstraint importance per cellkind
+    MAX_ACT : [0,0,80],  // Activity memory duration per cellkind
     ACT_MEAN : "geometric",
   },
 
