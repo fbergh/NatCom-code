@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>PageTitle</title>
+  <title>Collective Migration Simulation</title>
   <link rel="stylesheet" type="text/css" href="style.css">
   <!-- Sourcing the cpm build -->
   <script src="jslib/cpm.js"></script>
@@ -12,10 +12,17 @@
   <script src="main.js"></script>
 </head>
 <body>
-  <h1>Basic simulation</h1>
-  <input type="number" id="numobst" value="10">
-  <input type="number" id="numcells" value="3">
-  <button onclick="initialize()">Start</button>
-  <br>
+  <h1>Collective Migration Simulation</h1>
+  <table>
+    <tbody>
+      <tr>
+        <td>Number of obstacles:</td> <td><input type="number" id="numobst" value="16"><br></td>
+      </tr>
+      <tr>
+        <td>Number of cells:</td> <td><input type="number" id="numcells" value="4"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button style="margin-left:10px;" onclick="initialize()">Start</button><br><br>
 </body>
 </html>
