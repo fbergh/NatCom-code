@@ -1,3 +1,4 @@
+let volume_normal_cell = 50;
 let config = {
 
   // Grid settings
@@ -7,7 +8,7 @@ let config = {
   // CPM parameters and configuration
   conf : {
     torus : [true,true], // Should the grid have linked borders?
-    seed : 1337,  // Seed for random number generation.
+    // seed : 1337,  // Seed for random number generation.
     T : 20, // CPM temperature
 
     // Adhesion parameters:
@@ -17,10 +18,10 @@ let config = {
 
     // VolumeConstraint parameters
     LAMBDA_V : [0,100,50], // VolumeConstraint importance per cellkind
-    V : [0,78,50], // Target volume of each cellkind
+    V : [0,volume_normal_cell/2,volume_normal_cell], // Target volume of each cellkind
 
-    LAMBDA_P : [0,100,2],
-    P : [0,31,100],
+    LAMBDA_P : [0,16*(volume_normal_cell/100),2],
+    P : [0,32*(volume_normal_cell/100),100],
 
     LAMBDA_ACT : [0,0,100],  // ActivityConstraint importance per cellkind
     MAX_ACT : [0,0,50],  // Activity memory duration per cellkind
