@@ -40,15 +40,19 @@ function initializeGrid(){
   // add the GridManipulator if not already there and if you need it
   if (!this.helpClasses["gm"]){ this.addGridManipulator() }
 
-  // Space obstacles kinda evenly
+  // Space obstacles evenly
   let nrObstacles = Number(this.conf.NRCELLS[0]);
-  let xStep = (this.C.extents[0]-20) / Math.sqrt(nrObstacles);
-  let yStep = (this.C.extents[1]-20) / Math.sqrt(nrObstacles);
+  let pad = 20;
+  let width = this.C.extents[0]; let height = this.C.extents[1];
+  let xStep = (width -pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
+  let yStep = (height-pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
   let seededObstacles = 0
-  for (let i=10; i<this.C.extents[0]-10 && seededObstacles < nrObstacles; i+=xStep) {
-    for (let j=10; j<this.C.extents[1]-10 && seededObstacles < nrObstacles; j+=yStep) {
-      this.gm.seedCellAt(1, [Math.floor(j), Math.floor(i)]);
-      seededObstacles++;
+  for (let y=pad; y<height; y+=yStep) {
+    for (let x=pad; x<width; x+=xStep) {
+      if (seededObstacles++ >= nrObstacles) 
+        break;
+      console.log(x);
+      this.gm.seedCellAt(1, [Math.floor(x), Math.floor(y)]);
     }
   }
 
