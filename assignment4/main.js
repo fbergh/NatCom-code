@@ -42,17 +42,18 @@ function initializeGrid(){
 
   // Space obstacles evenly
   let nrObstacles = Number(this.conf.NRCELLS[0]);
-  let pad = 20;
-  let width = this.C.extents[0]; let height = this.C.extents[1];
-  let xStep = (width -pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
-  let yStep = (height-pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
-  let seededObstacles = 0
-  for (let y=pad; y<height; y+=yStep) {
-    for (let x=pad; x<width; x+=xStep) {
-      if (seededObstacles++ >= nrObstacles) 
-        break;
-      console.log(x);
-      this.gm.seedCellAt(1, [Math.floor(x), Math.floor(y)]);
+  if (nrObstacles > 0) {
+    let pad = 20;
+    let width = this.C.extents[0]; let height = this.C.extents[1];
+    let xStep = (width -pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
+    let yStep = (height-pad*2) / (Math.ceil(Math.sqrt(nrObstacles))-1);
+    let seededObstacles = 0
+    for (let y=pad; y<height; y+=yStep) {
+      for (let x=pad; x<width; x+=xStep) {
+        if (seededObstacles++ >= nrObstacles) 
+          break;
+        this.gm.seedCellAt(1, [Math.floor(x), Math.floor(y)]);
+      }
     }
   }
 
