@@ -13,9 +13,9 @@ let config = {
     framerate: 10,
 
     // Adhesion parameters:
-    J: [[0,20,0],
-			[20,20,20],
-			[20,20,20]],
+    J: [[0,20,20],
+        [20,20,20],
+      [20,20,0]],
 
     // VolumeConstraint parameters
     LAMBDA_V : [0,100,50], // VolumeConstraint importance per cellkind
