@@ -10,9 +10,10 @@ let config = {
     torus : [true,true], // Should the grid have linked borders?
     // seed : 1337,  // Seed for random number generation.
     T : 20, // CPM temperature
+    framerate: 10,
 
     // Adhesion parameters:
-    J: [[0,20,20],
+    J: [[0,20,0],
 			[20,20,20],
 			[20,20,20]],
 
@@ -35,6 +36,7 @@ let config = {
     NRCELLS : [2,2], // Number of cells to seed for all
     // non-background cellkinds.
 
+    IMGFRAMERATE : 20,
     RUNTIME : 500, // Only used in node
 
     CANVASCOLOR : "eaecef",
