@@ -8,7 +8,7 @@ let config = {
   // CPM parameters and configuration
   conf : {
     torus : [true,true], // Should the grid have linked borders?
-    // seed : 1337,  // Seed for random number generation.
+    seed : 132,  // Seed for random number generation.
     T : 20, // CPM temperature
     framerate: 10,
 
