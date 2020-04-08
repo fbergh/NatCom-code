@@ -7,6 +7,13 @@ let meter;
 function setParams() {
   config.simsettings.NRCELLS[0] = document.getElementById('numobst').value;
   config.simsettings.NRCELLS[1] = document.getElementById('numcells').value;
+  if (document.getElementById('migcells').checked) {
+    console.log('Mig')
+    config.conf.MAX_ACT[2] = 80;
+  } else {
+    console.log('Non-mig')
+    config.conf.MAX_ACT[2] = 20;
+  }
 }
 
 // Initialises the environment
@@ -50,7 +57,7 @@ function initializeGrid(){
     let seededObstacles = 0
     for (let y=pad; y<height; y+=yStep) {
       for (let x=pad; x<width; x+=xStep) {
-        if (seededObstacles++ >= nrObstacles) 
+        if (seededObstacles++ >= nrObstacles)
           break;
         this.gm.seedCellAt(1, [Math.floor(x), Math.floor(y)]);
       }
