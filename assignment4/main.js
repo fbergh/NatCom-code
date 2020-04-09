@@ -10,9 +10,11 @@ function setParams() {
   config.simsettings.NRCELLS[1] = document.getElementById('numcells').value;
   if (document.getElementById('migcells').checked) {
     console.log('Mig')
+    config.simsettings.CELLCOLOR[1] = '6305fb';
     config.conf.MAX_ACT[2] = 80;
   } else {
     console.log('Non-mig')
+    config.simsettings.CELLCOLOR[1] = 'a5fb05';
     config.conf.MAX_ACT[2] = 20;
   }
 }
