@@ -1,6 +1,7 @@
 'use strict'
 let sim;
 let meter;
+let steps;
 
 
 // Sets the parameters of the config object according to the on page inputs
@@ -20,6 +21,7 @@ function setParams() {
 function initialize() {
   killRunning();
   setParams();
+  steps = 0;
   let custommethods = {
     initializeGrid : initializeGrid
   }
@@ -31,8 +33,10 @@ function initialize() {
 // Step function for the simulation
 function step() {
   sim.step();
-	meter.tick()
+	meter.tick();
+  steps ++;
   requestAnimationFrame(step);
+  document.getElementById('numsteps').textContent = steps;
 }
 
 // Stops and removes a simulation if it exists
