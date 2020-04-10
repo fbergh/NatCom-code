@@ -10,7 +10,6 @@ let config = {
     torus : [true,true], // Should the grid have linked borders?
     seed : 132,  // Seed for random number generation.
     T : 20, // CPM temperature
-    framerate: 10,
 
     // Adhesion parameters:
     J: [[0,20,20],
