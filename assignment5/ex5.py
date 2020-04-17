@@ -23,12 +23,11 @@ ax.set_xlabel("Class")
 ax.set_ylabel("Frequency")
 ax.set_title("Histogram of class distribution")
 plt.savefig(f"img/ex5-class-distribution.png", bbox_inches='tight')
-# plt.show()
 
 max_max_depth = 10
 max_depths = range(1,max_max_depth+1)
 learning_rates = np.arange(0.2, 1.1, 0.2)
-accuracies, f_scores = {}, {}
+accuracies, f_scores, features = {}, {}, {}
 
 for lr in learning_rates:
     accs, fs = [], []
@@ -52,7 +51,8 @@ for lr in learning_rates:
 
         accs.append(np.sum(preds==ground_truths)/float(len(preds)))
         fs.append(metrics.f1_score(ground_truths, preds, average="weighted"))
-        print(f'Feature importance = {ada.feature_importances_}')
+        # Round learning rate to one decimal due to float precision
+        features[np.round(lr,1),md] = ada.feature_importances_
 
         # conf_mat = metrics.confusion_matrix(ground_truths, preds)
         # df_cm = pd.DataFrame(conf_mat, index=range(3,10), columns=range(3,10))
@@ -60,9 +60,8 @@ for lr in learning_rates:
         # sn.heatmap(df_cm, annot=True)
         # ax.set_xlabel("Predicted label")
         # ax.set_ylabel("True label")
-        # ax.set_title(f"Confusion matrix for AdaBoost with max_depth={md}")
-        # plt.savefig(f"img/ex5-confusion-matrix-max_depth-{md}.png", bbox_inches='tight')
-        # plt.show()
+        # ax.set_title(f"Confusion matrix for AdaBoost with lr={np.round(lr,1)} and max_depth={md}")
+        # plt.savefig(f"img/ex5-confusion-matrix-lr={np.round(lr,1)}-max_depth={md}.png", bbox_inches='tight')
 
     accuracies[lr] = accs
     f_scores[lr] = fs
@@ -71,14 +70,34 @@ def plot_metric(metric):
     fig, ax = plt.subplots(1, 1)
     ax.grid(zorder=0)
     for lr in learning_rates:
-        ax.plot(accuracies[lr], label=f"LR = {np.round(lr,1)}", zorder=2)
+        if metric == "Accuracy":
+            ax.plot(accuracies[lr], label=f"LR = {np.round(lr,1)}", zorder=2)
+        else:
+            ax.plot(f_scores[lr], label=f"LR = {np.round(lr,1)}", zorder=2)
     ax.legend(loc=4, framealpha=1)
     ax.set_xticks(range(max_max_depth))
     ax.set_xticklabels(max_depths)
     ax.set_xlabel("max_depth")
     ax.set_ylabel(metric)
     ax.set_title(f"{metric} for different max_depth values")
-    plt.savefig(f'img/ex5-{metric.lower()}.png')
+    plt.savefig(f'img/ex5-{metric.lower()}.png', bbox_inches='tight')
 
 plot_metric("Accuracy")
 plot_metric("F1-score")
+
+features_d10 = features[0.6,10]
+features_d1  = features[0.2,1]
+
+scale = 3
+displace = 0.5
+fig, ax = plt.subplots(1, 1, figsize=(10,5))
+ax.grid(zorder=0)
+ax.bar(np.arange(len(features_d1))*scale-displace, features_d1, label="max_depth=1, LR=0.2", zorder=2)
+ax.bar(np.arange(len(features_d10))*scale+displace, features_d10, label="max_depth=10, LR=0.6", zorder=2)
+ax.set_xticks(np.arange(len(features_d10))*scale)
+ax.set_xticklabels([colname.replace(" ", "\n") for colname in X.columns])
+ax.set_xlabel("Features")
+ax.set_ylabel("Feature importance")
+ax.set_title("Feature importance for two different AdaBoost configurations")
+ax.legend(framealpha=1)
+plt.savefig(f'img/ex5-feature-importance.png', bbox_inches='tight')
